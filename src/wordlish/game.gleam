@@ -1,3 +1,4 @@
+import gleam/dict.{type Dict}
 import gleam/list
 import gleam/result
 import wordlish/judge.{type LetterResult}
@@ -57,5 +58,31 @@ pub fn make_guess(state: GameState, guess: String) -> #(GameState, GameOutcome) 
     True, _ -> #(new_state, Won(attempts))
     _, True -> #(new_state, Lost(state.answer))
     _, _ -> #(new_state, InProgress)
+  }
+}
+
+pub fn get_keyboard_state(state: GameState) -> Dict(String, LetterResult) {
+  state.guesses
+  |> list.flat_map(fn(guess) { judge.judge(guess, state.answer) })
+  |> list.fold(dict.new(), fn(acc, pair) {
+    let #(letter, new_result) = pair
+    case dict.get(acc, letter) {
+      Error(Nil) -> dict.insert(acc, letter, new_result)
+      Ok(existing) -> {
+        let best = better_result(existing, new_result)
+        dict.insert(acc, letter, best)
+      }
+    }
+  })
+}
+
+fn better_result(a: LetterResult, b: LetterResult) -> LetterResult {
+  // Correct > Present > Absent
+  case a, b {
+    judge.Correct, _ -> judge.Correct
+    _, judge.Correct -> judge.Correct
+    judge.Present, _ -> judge.Present
+    _, judge.Present -> judge.Present
+    _, _ -> judge.Absent
   }
 }

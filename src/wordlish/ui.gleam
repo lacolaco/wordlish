@@ -1,3 +1,4 @@
+import gleam/dict.{type Dict}
 import gleam/int
 import gleam/io
 import gleam/list
@@ -59,4 +60,27 @@ pub fn print_prompt(attempt: Int) -> Nil {
 /// Print invalid guess message
 pub fn print_invalid_guess() -> Nil {
   io.println(ansi.yellow("無効な単語です。5文字の英単語を入力してください。"))
+}
+
+/// Format keyboard state showing all 26 letters with their status
+pub fn format_keyboard_state(keyboard: Dict(String, LetterResult)) -> String {
+  let alphabet = [
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+    "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+  ]
+  alphabet
+  |> list.map(fn(letter) {
+    case dict.get(keyboard, letter) {
+      Ok(Correct) -> ansi.green(letter)
+      Ok(Present) -> ansi.yellow(letter)
+      Ok(Absent) -> ansi.dim(string.lowercase(letter))
+      Error(Nil) -> letter
+    }
+  })
+  |> string.join(" ")
+}
+
+/// Print keyboard state
+pub fn print_keyboard_state(keyboard: Dict(String, LetterResult)) -> Nil {
+  io.println(format_keyboard_state(keyboard))
 }

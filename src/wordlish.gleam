@@ -35,6 +35,10 @@ fn game_loop(state: GameState) -> Nil {
           let assert Ok(result) = game.get_last_result(new_state)
           ui.print_guess_result(result)
 
+          // Show keyboard state
+          let keyboard = game.get_keyboard_state(new_state)
+          ui.print_keyboard_state(keyboard)
+
           // Check outcome
           case outcome {
             Won(attempts) -> ui.print_win(attempts)
