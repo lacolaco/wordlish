@@ -1,4 +1,4 @@
-.PHONY: run build test format clean gen-words build-web serve-web kill-server
+.PHONY: run build test format clean gen-words build-web serve-web kill-server setup
 
 PORT := 8080
 
@@ -33,3 +33,7 @@ kill-server:
 serve-web: kill-server build-web
 	@echo "Starting server at http://localhost:$(PORT)"
 	python3 -m http.server $(PORT)
+
+# Setup development environment
+setup:
+	git config core.hooksPath .githooks

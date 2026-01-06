@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+echo "Running pre-commit checks..."
+
+echo "-> gleam format --check"
+gleam format --check src test
+
+echo "-> gleam build"
+gleam build
+
+echo "-> gleam test"
+gleam test
+
+echo "All checks passed!"
