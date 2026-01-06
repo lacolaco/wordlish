@@ -107,3 +107,55 @@ pub fn keyboard_state_keeps_best_result_test() {
   // C was Present in TRACE, upgraded to Correct in CLEAR
   dict.get(keyboard, "C") |> should.equal(Ok(Correct))
 }
+
+// --- suggestions tests ---
+
+import gleam/list
+
+pub fn suggestions_basic_test() {
+  // Answer: NASTY, Guess: TASTY
+  // T@0=Present, A@1=Correct, S@2=Correct, T@3=Correct, Y@4=Correct
+  // Should suggest words matching ?ASTY where position 0 is not T
+  // Valid: HASTY, NASTY (but NASTY is answer so excluded), PASTY
+  let state = game.new_game("NASTY")
+  let #(state, _) = game.make_guess(state, "TASTY")
+  let suggestions = game.get_suggestions(state, 10)
+  // Should have at least HASTY and PASTY
+  list.length(suggestions) |> should.not_equal(0)
+}
+
+pub fn suggestions_includes_answer_test() {
+  let state = game.new_game("NASTY")
+  let #(state, _) = game.make_guess(state, "TASTY")
+  let suggestions = game.get_suggestions(state, 100)
+  // Answer should be included in suggestions
+  list.contains(suggestions, "NASTY") |> should.equal(True)
+}
+
+pub fn suggestions_excludes_absent_letters_test() {
+  // Answer: NASTY, Guess: PLATE then TASTY
+  // P, L, E are absent. Should not suggest PASTY (has P)
+  let state = game.new_game("NASTY")
+  let #(state, _) = game.make_guess(state, "PLATE")
+  let #(state, _) = game.make_guess(state, "TASTY")
+  let suggestions = game.get_suggestions(state, 100)
+  list.contains(suggestions, "PASTY") |> should.equal(False)
+}
+
+pub fn suggestions_screenshot_scenario_test() {
+  // Exact scenario from user's screenshot
+  // Answer appears to be something like CATTY or NATTY (pattern _ATTY)
+  // Wait, looking at screenshot: TASTY has S green at position 2
+  // So pattern is _ASTY
+  // Let's assume answer is NASTY
+  let state = game.new_game("NASTY")
+  let #(state, _) = game.make_guess(state, "PLATE")
+  let #(state, _) = game.make_guess(state, "TASTY")
+  let #(state, _) = game.make_guess(state, "FATTY")
+  let #(state, _) = game.make_guess(state, "BATTY")
+  let #(state, _) = game.make_guess(state, "RATTY")
+  let suggestions = game.get_suggestions(state, 10)
+  // Should suggest HASTY (the only remaining valid candidate)
+  // NASTY is answer (excluded), PASTY has P (absent), TASTY has T at position 0 (invalid)
+  list.contains(suggestions, "HASTY") |> should.equal(True)
+}
