@@ -151,10 +151,7 @@ fn view_tile(letter: String, status: LetterResult) -> Element(Msg) {
 }
 
 fn view_empty_row() -> Element(Msg) {
-  html.div(
-    [class("row")],
-    list.repeat(html.div([class("tile empty")], []), 5),
-  )
+  html.div([class("row")], list.repeat(html.div([class("tile empty")], []), 5))
 }
 
 fn view_input(model: Model) -> Element(Msg) {
@@ -232,7 +229,10 @@ fn view_keyboard(keyboard: Dict(String, LetterResult)) -> Element(Msg) {
   )
 }
 
-fn view_key(letter: String, keyboard: Dict(String, LetterResult)) -> Element(Msg) {
+fn view_key(
+  letter: String,
+  keyboard: Dict(String, LetterResult),
+) -> Element(Msg) {
   let status_class = case dict.get(keyboard, letter) {
     Ok(Correct) -> "correct"
     Ok(Present) -> "present"
