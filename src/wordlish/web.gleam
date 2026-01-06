@@ -92,7 +92,7 @@ fn try_guess(model: Model) -> Model {
       let #(new_game, outcome) = game.make_guess(model.game, guess)
       let assert Ok(result) = game.get_last_result(new_game)
       let new_keyboard = game.get_keyboard_state(new_game)
-      let new_suggestions = game.get_suggestions(new_game, 5)
+      let new_suggestions = game.get_suggestions(new_game, 10)
       Model(
         game: new_game,
         input: "",
