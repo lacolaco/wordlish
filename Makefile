@@ -1,4 +1,4 @@
-.PHONY: run build test format clean
+.PHONY: run build test format clean gen-words
 
 run:
 	gleam run
@@ -14,3 +14,7 @@ format:
 
 clean:
 	rm -rf build
+
+# Generate src/wordlish/words_data.gleam from priv/*.txt
+gen-words:
+	gleam run -m codegen
